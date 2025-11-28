@@ -78,26 +78,26 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
         setCallStatus((prev) => ({ ...prev, ...obj }));
     };
     const endCall = () => {
-        console.log("🔴 Ending call and cleaning up...");
+        console.log("Ending call and cleaning up...");
         if (localStream) {
             localStream.getTracks().forEach(track => {
                 track.stop();
-                console.log("🛑 Stopped track:", track.kind);
+                console.log("Stopped track:", track.kind);
             });
         }
         if (screenStream) {
             screenStream.getTracks().forEach(track => {
                 track.stop();
-                console.log("🛑 Stopped screen share track");
+                console.log("Stopped screen share track");
             });
         }
         Object.entries(peerConnections).forEach(([id, pc]) => {
             pc.close();
-            console.log("🔌 Closed connection with:", id);
+            console.log(" Closed connection with:", id);
         });
         if (socket) {
             socket.disconnect();
-            console.log("🔌 Socket disconnected");
+            console.log("Socket disconnected");
         }
         setLocalStream(null);
         setPeerConnections({});

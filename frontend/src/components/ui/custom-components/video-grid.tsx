@@ -18,7 +18,7 @@ const VideoGrid: React.FC<VideoGridProps> = ({ localStream, remoteStreams }) => 
       )}
       {Object.entries(remoteStreams).map(([peerId, stream]) => {
         const trackCount = stream.getTracks().length;
-        console.log(`🎬 Rendering video for ${peerId}, tracks: ${trackCount}`);
+        console.log(`Rendering video for ${peerId}, tracks: ${trackCount}`);
         
         return (
           <VideoPlayer

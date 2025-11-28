@@ -3,7 +3,7 @@ const prepForCall = async (
     updateCallStatus: any,
     setLocalStream: any
 ): Promise<MediaStream> => {
-    console.log("🎥 prepForCall: Starting...");
+    console.log("prepForCall: Starting...");
     
     const constraints = {
         video: {
@@ -14,12 +14,12 @@ const prepForCall = async (
     };
 
     try {
-        console.log("📹 Requesting getUserMedia...");
+        console.log(" Requesting getUserMedia...");
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         
-        console.log("✅ Got media stream:", stream);
-        console.log("📹 Video tracks:", stream.getVideoTracks().length);
-        console.log("🎤 Audio tracks:", stream.getAudioTracks().length);
+        console.log(" Got media stream:", stream);
+        console.log(" Video tracks:", stream.getVideoTracks().length);
+        console.log(" Audio tracks:", stream.getAudioTracks().length);
         const newStatus = {
             ...callStatus,
             haveMedia: true,
@@ -27,12 +27,12 @@ const prepForCall = async (
             audioEnabled: true,
         };
         updateCallStatus(newStatus);
-        console.log("💾 Setting local stream...");
+        console.log(" Setting local stream...");
         setLocalStream(stream);
-        console.log("✅ prepForCall: Complete!");
+        console.log(" prepForCall: Complete!");
         return stream;
     } catch (err) {
-        console.error("❌ prepForCall error:", err);
+        console.error("prepForCall error:", err);
         alert("Could not access camera/microphone. Please allow permissions!");
         throw err;
     }

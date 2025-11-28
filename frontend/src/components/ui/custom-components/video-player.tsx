@@ -17,12 +17,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   useEffect(() => {
     if (videoRef.current && stream) {
-      console.log(`🎥 Setting video stream for: ${label}`, stream.id);
-      console.log(`  - Video tracks: ${stream.getVideoTracks().length}`);
-      console.log(`  - Audio tracks: ${stream.getAudioTracks().length}`);
+      console.log(`Setting video stream for: ${label}`, stream.id);
+      console.log(`Video tracks: ${stream.getVideoTracks().length}`);
+      console.log(`Audio tracks: ${stream.getAudioTracks().length}`);
       videoRef.current.srcObject = stream;
       videoRef.current.play().catch(err => {
-        console.log("⚠️ Autoplay prevented:", err);
+        console.log("Autoplay prevented:", err);
       });
     }
   }, [stream, label]);

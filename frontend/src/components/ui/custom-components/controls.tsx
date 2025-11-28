@@ -16,20 +16,20 @@ const Controls: React.FC = () => {
 
   const toggleAudio = () => {
     if (!localStream) {
-      console.log("❌ No local stream available");
+      console.log(" No local stream available");
       return;
     }
 
     const audioTracks = localStream.getAudioTracks();
     if (audioTracks.length === 0) {
-      console.log("❌ No audio tracks found");
+      console.log("No audio tracks found");
       return;
     }
 
     const audioTrack = audioTracks[0];
     audioTrack.enabled = !audioTrack.enabled;
 
-    console.log("🎤 Audio toggled:", audioTrack.enabled);
+    console.log(" Audio toggled:", audioTrack.enabled);
 
     updateCallStatus({
       audioEnabled: audioTrack.enabled
@@ -38,20 +38,20 @@ const Controls: React.FC = () => {
 
   const toggleVideo = () => {
     if (!localStream) {
-      console.log("❌ No local stream available");
+      console.log(" No local stream available");
       return;
     }
 
     const videoTracks = localStream.getVideoTracks();
     if (videoTracks.length === 0) {
-      console.log("❌ No video tracks found");
+      console.log("No video tracks found");
       return;
     }
 
     const videoTrack = videoTracks[0];
     videoTrack.enabled = !videoTrack.enabled;
 
-    console.log("📹 Video toggled:", videoTrack.enabled);
+    console.log("Video toggled:", videoTrack.enabled);
 
     updateCallStatus({
       videoEnabled: videoTrack.enabled
@@ -61,7 +61,7 @@ const Controls: React.FC = () => {
   const toggleScreenShare = async () => {
     try {
       if (!isScreenSharing) {
-        console.log("🖥️ Starting screen share...");
+        console.log(" Starting screen share...");
         
         const stream = await navigator.mediaDevices.getDisplayMedia({
           video: {
@@ -79,26 +79,26 @@ const Controls: React.FC = () => {
           
           if (videoSender) {
             videoSender.replaceTrack(screenTrack);
-            console.log("✅ Replaced video track with screen share");
+            console.log("Replaced video track with screen share");
           }
         });
         screenTrack.onended = () => {
-          console.log("🛑 Screen share stopped by user");
+          console.log("Screen share stopped by user");
           stopScreenShare();
         };
 
-        console.log("✅ Screen sharing started");
+        console.log(" Screen sharing started");
       } else {
         stopScreenShare();
       }
     } catch (error) {
-      console.error("❌ Screen share error:", error);
+      console.error(" Screen share error:", error);
       alert("Could not share screen. Make sure you granted permission!");
     }
   };
 
   const stopScreenShare = () => {
-    console.log("🛑 Stopping screen share...");
+    console.log("Stopping screen share...");
     if (screenStream) {
       screenStream.getTracks().forEach(track => track.stop());
       setScreenStream(null);
@@ -112,13 +112,13 @@ const Controls: React.FC = () => {
         
         if (videoSender && cameraTrack) {
           videoSender.replaceTrack(cameraTrack);
-          console.log("✅ Replaced screen share with camera");
+          console.log(" Replaced screen share with camera");
         }
       });
     }
 
     setIsScreenSharing(false);
-    console.log("✅ Screen sharing stopped");
+    console.log("Screen sharing stopped");
   };
 
   return (

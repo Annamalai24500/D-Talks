@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { useCallContext } from "../webrtcutilites/callcontext";
 import socketConnection from "../webrtcutilites/socket-connection";
 import prepForCall from "../webrtcutilites/prepforcall";
@@ -34,7 +34,7 @@ const Room: React.FC = () => {
   const localStreamRef = useRef<MediaStream | null>(null);
   const socketRef = useRef<any>(null);
   const pendingIceCandidates = useRef<{ [socketId: string]: RTCIceCandidateInit[] }>({});
-
+  const navigate = useNavigate();
   useEffect(() => {
     peerConnectionsRef.current = peerConnections;
   }, [peerConnections]);
@@ -53,7 +53,21 @@ const Room: React.FC = () => {
     return result;
   };
 
-
+  const validroom = async() =>{
+    try {
+      const response = await axios.get(`http://localhost:8080/api/room/validroom/${roomId}`);
+      if(response.data.success){
+        console.log("Valid roombuddy");
+        return;
+      }else{
+        console.log("Not a valid room");
+        navigate("/")
+        return;
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const handleRemoteTrack = (socketId: string, stream: MediaStream) => {
     console.log("🎬 Updating remote stream for:", socketId);
     console.log("📊 Stream has tracks:", stream.getTracks().length);
@@ -350,7 +364,7 @@ const Room: React.FC = () => {
   };
   useEffect(() => {
     if (!roomId || isInitialized) return;
-
+    validroom()
     const initializeRoom = async () => {
       console.log("🚀 Initializing room:", roomId);
 
