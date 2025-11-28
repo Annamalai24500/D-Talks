@@ -45,11 +45,11 @@ const Room: React.FC = () => {
   const shouldCreateOffer = (remoteSocketId: string, currentSocketId?: string): boolean => {
     const myId = currentSocketId || mySocketId;
     if (!myId || !remoteSocketId) {
-      console.log("⚠️ Missing socket IDs - myId:", myId, "remoteId:", remoteSocketId);
+      console.log("Missing socket IDs - myId:", myId, "remoteId:", remoteSocketId);
       return false;
     }
     const result = myId.localeCompare(remoteSocketId) < 0;
-    console.log(`🎲 Comparing "${myId}" vs "${remoteSocketId}" = ${result ? 'I CREATE OFFER' : 'I WAIT'}`);
+    console.log(`Comparing "${myId}" vs "${remoteSocketId}" = ${result ? 'I CREATE OFFER' : 'I WAIT'}`);
     return result;
   };
 
@@ -69,15 +69,15 @@ const Room: React.FC = () => {
     }
   }
   const handleRemoteTrack = (socketId: string, stream: MediaStream) => {
-    console.log("🎬 Updating remote stream for:", socketId);
-    console.log("📊 Stream has tracks:", stream.getTracks().length);
+    console.log("Updating remote stream for:", socketId);
+    console.log("Stream has tracks:", stream.getTracks().length);
     stream.getTracks().forEach(track => {
       console.log(`  - ${track.kind} track:`, track.id, "enabled:", track.enabled);
     });
     
     setRemoteStreams(prev => {
       const updated = { ...prev, [socketId]: stream };
-      console.log("📊 Total remote streams:", Object.keys(updated).length);
+      console.log("Total remote streams:", Object.keys(updated).length);
       return updated;
     });
     
@@ -89,34 +89,34 @@ const Room: React.FC = () => {
     const sock = socketRef.current;
     const myId = sock?.id;
 
-    console.log("🎯 createOfferToUser called for:", remoteSocketId);
-    console.log("   My ID:", myId, "| Force:", forceCreate);
+    console.log("createOfferToUser called for:", remoteSocketId);
+    console.log("My ID:", myId, "| Force:", forceCreate);
 
     if (!forceCreate) {
-      console.log("❌ Not forcing, checking shouldCreateOffer...");
+      console.log("Not forcing, checking shouldCreateOffer...");
       if (!shouldCreateOffer(remoteSocketId, myId)) {
-        console.log("⏸️ Skipping - should wait for offer from:", remoteSocketId);
+        console.log("Skipping - should wait for offer from:", remoteSocketId);
         return;
       }
     }
 
     if (peerConnectionsRef.current[remoteSocketId]) {
-      console.log("⚠️ Connection already exists for:", remoteSocketId);
+      console.log("Connection already exists for:", remoteSocketId);
       return;
     }
 
     if (!localStreamRef.current) {
-      console.log("❌ No local stream!");
+      console.log("No local stream!");
       return;
     }
 
     if (!sock) {
-      console.log("❌ No socket!");
+      console.log("No socket!");
       return;
     }
 
     try {
-      console.log("🚀 Creating peer connection and offer for:", remoteSocketId);
+      console.log("Creating peer connection and offer for:", remoteSocketId);
       
       const { peerConnection, remoteStream } = createPeerConnection(
         remoteSocketId, 
@@ -126,13 +126,13 @@ const Room: React.FC = () => {
       );
       localStreamRef.current.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStreamRef.current!);
-        console.log("📤 Added track:", track.kind);
+        console.log("Added track:", track.kind);
       });
       setRemoteStreams(prev => ({ ...prev, [remoteSocketId]: remoteStream }));
       setPeerConnections(prev => ({ ...prev, [remoteSocketId]: peerConnection }));
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
-      console.log("📤 Sending offer to:", remoteSocketId);
+      console.log("Sending offer to:", remoteSocketId);
       sock.emit("newOffer", {
         roomId,
         offer,
@@ -140,33 +140,33 @@ const Room: React.FC = () => {
       });
 
     } catch (error) {
-      console.error("❌ Error creating offer:", error);
+      console.error("Error creating offer:", error);
     }
   };
   const handleOffer = async (from: string, offer: RTCSessionDescriptionInit) => {
     try {
-      console.log("📞 Handling offer from:", from);
+      console.log("Handling offer from:", from);
       
       const sock = socketRef.current;
       const myId = sock?.id;
       if (myId && shouldCreateOffer(from, myId)) {
-        console.log("❌ Rejecting offer - I should be the offerer, not them");
+        console.log("Rejecting offer - I should be the offerer, not them");
         return;
       }
 
       if (peerConnectionsRef.current[from]) {
-        console.log("⚠️ Connection already exists");
+        console.log("Connection already exists");
         return;
       }
 
       if (!localStreamRef.current) {
-        console.log("❌ No local stream!");
+        console.log("No local stream!");
         return;
       }
 
       if (!sock) return;
 
-      console.log("✅ Accepting offer and creating answer");
+      console.log("Accepting offer and creating answer");
 
       const { peerConnection, remoteStream } = createPeerConnection(
         from, 
@@ -176,18 +176,18 @@ const Room: React.FC = () => {
       );
       localStreamRef.current.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStreamRef.current!);
-        console.log("📤 Added track:", track.kind);
+        console.log("Added track:", track.kind);
       });
       setRemoteStreams(prev => ({ ...prev, [from]: remoteStream }));
       setPeerConnections(prev => ({ ...prev, [from]: peerConnection }));
       await peerConnection.setRemoteDescription(offer);
       if (pendingIceCandidates.current[from]) {
-        console.log(`📦 Processing ${pendingIceCandidates.current[from].length} pending ICE candidates`);
+        console.log(`Processing ${pendingIceCandidates.current[from].length} pending ICE candidates`);
         for (const candidate of pendingIceCandidates.current[from]) {
           try {
             await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
           } catch (err) {
-            console.error("❌ Error adding pending ICE:", err);
+            console.error("Error adding pending ICE:", err);
           }
         }
         delete pendingIceCandidates.current[from];
@@ -195,7 +195,7 @@ const Room: React.FC = () => {
       const answer = await peerConnection.createAnswer();
       await peerConnection.setLocalDescription(answer);
 
-      console.log("📤 Sending answer to:", from);
+      console.log("Sending answer to:", from);
       sock.emit("newAnswer", {
         roomId,
         answer,
@@ -203,38 +203,38 @@ const Room: React.FC = () => {
       });
 
     } catch (error) {
-      console.error("❌ Error handling offer:", error);
+      console.error("Error handling offer:", error);
     }
   };
 
   const handleAnswer = async (from: string, answer: RTCSessionDescriptionInit) => {
     try {
-      console.log("✅ Handling answer from:", from);
+      console.log("Handling answer from:", from);
 
       const peerConnection = peerConnectionsRef.current[from];
       if (!peerConnection) {
-        console.log("❌ No peer connection for:", from);
+        console.log("No peer connection for:", from);
         return;
       }
 
       await peerConnection.setRemoteDescription(answer);
-      console.log("✅ Remote description set");
+      console.log("Remote description set");
 
       
       if (pendingIceCandidates.current[from]) {
-        console.log(`📦 Processing ${pendingIceCandidates.current[from].length} pending ICE candidates`);
+        console.log(`Processing ${pendingIceCandidates.current[from].length} pending ICE candidates`);
         for (const candidate of pendingIceCandidates.current[from]) {
           try {
             await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
           } catch (err) {
-            console.error("❌ Error adding pending ICE:", err);
+            console.error("Error adding pending ICE:", err);
           }
         }
         delete pendingIceCandidates.current[from];
       }
 
     } catch (error) {
-      console.error("❌ Error handling answer:", error);
+      console.error("Error handling answer:", error);
     }
   };
 
@@ -244,7 +244,7 @@ const Room: React.FC = () => {
       const peerConnection = peerConnectionsRef.current[from];
       
       if (!peerConnection) {
-        console.log("⚠️ No peer connection yet, buffering ICE from:", from);
+        console.log("No peer connection yet, buffering ICE from:", from);
         if (!pendingIceCandidates.current[from]) {
           pendingIceCandidates.current[from] = [];
         }
@@ -252,7 +252,7 @@ const Room: React.FC = () => {
         return;
       }
       if (!peerConnection.remoteDescription) {
-        console.log("⚠️ Remote description not set yet, buffering ICE from:", from);
+        console.log("Remote description not set yet, buffering ICE from:", from);
         if (!pendingIceCandidates.current[from]) {
           pendingIceCandidates.current[from] = [];
         }
@@ -261,15 +261,15 @@ const Room: React.FC = () => {
       }
 
       await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-      console.log("✅ ICE candidate added from:", from);
+      console.log("ICE candidate added from:", from);
 
     } catch (error) {
-      console.error("❌ ICE error:", error);
+      console.error("ICE error:", error);
     }
   };
 
   const setupSocketListeners = (sock: any) => {
-    console.log("🔧 Setting up socket listeners...");
+    console.log("Setting up socket listeners...");
     sock.off("existingUsers");
     sock.off("userJoined");
     sock.off("userLeft");
@@ -277,65 +277,65 @@ const Room: React.FC = () => {
     sock.off("receiveAnswer");
     sock.off("receiveIceCandidate");
     sock.on("existingUsers", (users: Array<{ socketId: string; username: string }>) => {
-      console.log("📋 Existing users:", users);
+      console.log("Existing users:", users);
 
       if (users.length === 0) {
-        console.log("👤 I'm the first person here!");
+        console.log("I'm the first person here!");
         return;
       }
       users.forEach(user => {
-        console.log("🎯 Existing user:", user.socketId);
-        console.log("🔍 My ID:", sock.id, "Their ID:", user.socketId);
+        console.log("Existing user:", user.socketId);
+        console.log("My ID:", sock.id, "Their ID:", user.socketId);
         
         setTimeout(() => {
           const myId = sock.id;
           if (!myId) {
-            console.log("❌ No socket ID available yet!");
+            console.log("No socket ID available yet!");
             return;
           }
           
           const shouldCreate = myId.localeCompare(user.socketId) < 0;
-          console.log(`🎲 Comparing "${myId}" vs "${user.socketId}" = ${shouldCreate ? 'I CREATE' : 'I WAIT'}`);
+          console.log(`Comparing "${myId}" vs "${user.socketId}" = ${shouldCreate ? 'I CREATE' : 'I WAIT'}`);
           
           if (shouldCreate) {
-            console.log("✅ I'm creating offer to:", user.socketId);
+            console.log("I'm creating offer to:", user.socketId);
             createOfferToUser(user.socketId, true);
           } else {
-            console.log("⏸️ Waiting for offer from:", user.socketId);
+            console.log("Waiting for offer from:", user.socketId);
           }
         }, 1000);
       });
     });
     sock.on("userJoined", (data: { socketId: string; username: string }) => {
-      console.log("✅ User joined:", data.socketId, data.username);
-      console.log("🔍 My ID:", sock.id, "Their ID:", data.socketId);
+      console.log("User joined:", data.socketId, data.username);
+      console.log("My ID:", sock.id, "Their ID:", data.socketId);
       
       setTimeout(() => {
         const myId = sock.id;
         if (!myId) {
-          console.log("❌ No socket ID available yet!");
+          console.log("No socket ID available yet!");
           return;
         }
         
         const shouldCreate = myId.localeCompare(data.socketId) < 0;
-        console.log(`🎲 Comparing "${myId}" vs "${data.socketId}" = ${shouldCreate ? 'I CREATE' : 'I WAIT'}`);
+        console.log(`Comparing "${myId}" vs "${data.socketId}" = ${shouldCreate ? 'I CREATE' : 'I WAIT'}`);
         
         if (shouldCreate) {
-          console.log("✅ I'm creating offer to:", data.socketId);
+          console.log("I'm creating offer to:", data.socketId);
           createOfferToUser(data.socketId, true);
         } else {
-          console.log("⏸️ Waiting for offer from:", data.socketId);
+          console.log("Waiting for offer from:", data.socketId);
         }
       }, 1000);
     });
     sock.on("userLeft", (data: { socketId: string }) => {
-      console.log("👋 User left:", data.socketId);
+      console.log("User left:", data.socketId);
       delete pendingIceCandidates.current[data.socketId];
       setPeerConnections(prev => {
         const pc = prev[data.socketId];
         if (pc) {
           pc.close();
-          console.log("🔌 Closed connection");
+          console.log("Closed connection");
         }
         const newPcs = { ...prev };
         delete newPcs[data.socketId];
@@ -348,53 +348,53 @@ const Room: React.FC = () => {
       });
     });
     sock.on("receiveOffer", async (data: { from: string; offer: RTCSessionDescriptionInit; username: string }) => {
-      console.log("📞 Received offer from:", data.from, data.username);
+      console.log("Received offer from:", data.from, data.username);
       await handleOffer(data.from, data.offer);
     });
     sock.on("receiveAnswer", async (data: { from: string; answer: RTCSessionDescriptionInit; username: string }) => {
-      console.log("✅ Received answer from:", data.from, data.username);
+      console.log("Received answer from:", data.from, data.username);
       await handleAnswer(data.from, data.answer);
     });
     sock.on("receiveIceCandidate", async (data: { from: string; candidate: RTCIceCandidateInit }) => {
-      console.log("🧊 Received ICE from:", data.from);
+      console.log("Received ICE from:", data.from);
       await handleIceCandidate(data.from, data.candidate);
     });
 
-    console.log("✅ Socket listeners ready!");
+    console.log("Socket listeners ready!");
   };
   useEffect(() => {
     if (!roomId || isInitialized) return;
     validroom()
     const initializeRoom = async () => {
-      console.log("🚀 Initializing room:", roomId);
+      console.log("Initializing room:", roomId);
 
       try {
-        console.log("📹 Getting media...");
+        console.log("Getting media...");
         const stream = await prepForCall(callStatus, updateCallStatus, setLocalStream);
         localStreamRef.current = stream;
-        console.log("✅ Media ready!");
+        console.log("Media ready!");
         await new Promise(resolve => setTimeout(resolve, 500));
-        console.log("🔌 Connecting socket...");
+        console.log("Connecting socket...");
         const sock = socketConnection();
         socketRef.current = sock;
         setSocket(sock);
         sock.on("connect", () => {
           const socketId = sock.id;
-          console.log("✅ Socket connected:", socketId);
+          console.log("Socket connected:", socketId);
           setMySocketId(socketId);
           setupSocketListeners(sock);
-          console.log("📥 Joining room...");
+          console.log("Joining room...");
           sock.emit("joinRoom", roomId);
         });
         setIsInitialized(true);
       } catch (error) {
-        console.error("❌ Initialization failed:", error);
+        console.error("Initialization failed:", error);
         alert("Failed to initialize. Check camera/mic permissions!");
       }
     };
     initializeRoom();
     return () => {
-      console.log("🧹 Cleanup...");
+      console.log("Cleanup...");
       if (socketRef.current) {
         socketRef.current.emit("leaveRoom", roomId);
         socketRef.current.disconnect();
