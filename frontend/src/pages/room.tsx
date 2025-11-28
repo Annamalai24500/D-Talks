@@ -415,34 +415,28 @@ const Room: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
+    <div className="min-h-screen bg-black from-gray-900 to-black text-white">
       <div className="p-4 border-b border-white/10 bg-black/30 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-black from-gray-400 to-white bg-clip-text text-transparent">
               dtalks
             </h1>
             <p className="text-sm text-gray-400">Room: {roomId}</p>
-            <p className="text-xs text-gray-500">My ID: {mySocketId.slice(0, 8)}...</p>
           </div>
           <div className="flex items-center gap-4">
-            <span className="bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-semibold border border-green-500/30">
+            <span className="bg-black text-white px-4 py-2 rounded-full text-sm font-semibold border border-black">
               👥 {Object.keys(remoteStreams).length + 1} online
             </span>
           </div>
         </div>
       </div>
       <div className="p-2 bg-black/50 text-xs text-gray-400 border-b border-white/10">
-        <div className="max-w-7xl mx-auto">
-          <span>Connections: {Object.keys(peerConnections).length}</span>
-          <span className="ml-4">Remote Streams: {Object.keys(remoteStreams).length}</span>
-          <span className="ml-4">IDs: {Object.keys(remoteStreams).map(id => id.slice(0,6)).join(', ')}</span>
-        </div>
       </div>
       <div className="p-4">
         <VideoGrid localStream={localStream} remoteStreams={remoteStreams} />
       </div>
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
+      <div className="fixed bottom-0 left-0 right-0 p-6 bg-black from-black via-black/80 to-transparent">
         <Controls />
       </div>
     </div>
